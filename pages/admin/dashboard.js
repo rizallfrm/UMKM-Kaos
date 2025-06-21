@@ -1,8 +1,8 @@
-import { getSession } from 'next-auth/react';
-import { useQuery, useMutation } from '@apollo/client';
-import { GET_PRODUCTS, DELETE_PRODUCT } from '../../graphql/queries';
-import { useRouter } from 'next/router';
-import Link from 'next/link';
+import { getSession } from "next-auth/react";
+import { useQuery, useMutation } from "@apollo/client";
+import { GET_PRODUCTS, DELETE_PRODUCT } from "../../graphql/queries";
+import { useRouter } from "next/router";
+import Link from "next/link";
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -12,7 +12,7 @@ export default function AdminDashboard() {
   });
 
   const handleDelete = async (id) => {
-    if (confirm('Are you sure you want to delete this product?')) {
+    if (confirm("Are you sure you want to delete this product?")) {
       await deleteProduct({ variables: { id } });
     }
   };
@@ -53,22 +53,22 @@ export default function AdminDashboard() {
             {data.products.map((product) => (
               <tr key={product.id}>
                 <td className="py-2 px-4 border">{product.name}</td>
-                <td className="py-2 px-4 border">Rp {product.price.toLocaleString()}</td>
                 <td className="py-2 px-4 border">
-                  <div className="flex gap-2">
-                    <Link
-                      href={`/admin/products/edit/${product.id}`}
-                      className="text-blue-600 hover:underline"
-                    >
-                      Edit
-                    </Link>
-                    <button
-                      onClick={() => handleDelete(product.id)}
-                      className="text-red-600 hover:underline"
-                    >
-                      Delete
-                    </button>
-                  </div>
+                  Rp {product.price.toLocaleString()}
+                </td>
+                <td className="py-2 px-4 border flex gap-2">
+                  <Link
+                    href={`/admin/products/edit/${product.id}`}
+                    className="text-blue-600 hover:underline"
+                  >
+                    Edit
+                  </Link>
+                  <button
+                    onClick={() => handleDelete(product.id)}
+                    className="text-red-600 hover:underline"
+                  >
+                    Delete
+                  </button>
                 </td>
               </tr>
             ))}
@@ -82,10 +82,10 @@ export default function AdminDashboard() {
 export async function getServerSideProps(context) {
   const session = await getSession(context);
 
-  if (!session || session.user.role !== 'admin') {
+  if (!session || session.user.role !== "admin") {
     return {
       redirect: {
-        destination: '/',
+        destination: "/",
         permanent: false,
       },
     };
