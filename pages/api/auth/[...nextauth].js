@@ -1,10 +1,11 @@
-import NextAuth from 'next-auth';
-import GoogleProvider from 'next-auth/providers/google';
-import FacebookProvider from 'next-auth/providers/facebook';
-import { FirestoreAdapter } from '@next-auth/firebase-adapter';
-import { db } from '../../../lib/firebase';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../../../lib/firebase';
+import NextAuth from "next-auth";
+import GoogleProvider from "next-auth/providers/google";
+import FacebookProvider from "next-auth/providers/facebook";
+import { FirestoreAdapter } from "@next-auth/firebase-adapter";
+import { db } from "../../../lib/firebase";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../../../lib/firebase";
+import { adminAuth } from "../../../lib/firebase-admin";
 
 export default NextAuth({
   providers: [
@@ -17,12 +18,12 @@ export default NextAuth({
       clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
     }),
     {
-      id: 'firebase',
-      name: 'Firebase',
-      type: 'credentials',
+      id: "firebase",
+      name: "Firebase",
+      type: "credentials",
       credentials: {
         email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" }
+        password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
         try {
@@ -31,34 +32,57 @@ export default NextAuth({
             credentials.email,
             credentials.password
           );
+          
           return {
             id: userCredential.user.uid,
             email: userCredential.user.email,
             name: userCredential.user.displayName,
+            accessToken: await userCredential.user.getIdToken()
           };
         } catch (error) {
+          console.error("Login error:", error);
           return null;
         }
-      }
-    }
+      },
+    },
   ],
   adapter: FirestoreAdapter(db),
   session: {
-    strategy: 'jwt',
-  },
-  jwt: {
-    secret: process.env.JWT_SECRET,
+    strategy: "jwt",
+    maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, account }) {
+      // Persist user data and access token to JWT
       if (user) {
-        token.role = user.role || 'user';
+        token.id = user.id;
+        token.accessToken = user.accessToken;
+        
+        // For Firebase email/password login
+        if (account?.provider === "firebase") {
+          try {
+            const firebaseUser = await adminAuth.getUser(user.id);
+            token.role = firebaseUser.customClaims?.role || "user";
+          } catch (err) {
+            console.error("Error getting user claims:", err);
+            token.role = "user";
+          }
+        }
+        // For OAuth providers
+        else {
+          token.role = "user";
+        }
       }
       return token;
     },
     async session({ session, token }) {
+      // Send properties to the client
+      session.user.id = token.id;
       session.user.role = token.role;
+      session.accessToken = token.accessToken;
       return session;
     },
   },
+  secret: process.env.NEXTAUTH_SECRET,
+  debug: process.env.NODE_ENV === 'development',
 });
