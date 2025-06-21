@@ -1,4 +1,4 @@
-import { gql } from 'apollo-server-micro';
+import { gql } from "apollo-server-micro";
 
 export const typeDefs = gql`
   type Product {
@@ -20,7 +20,7 @@ export const typeDefs = gql`
   }
 
   type Query {
-    products: [Product!]!
+    products(limit: Int, orderBy: String, orderDirection: String): [Product!]!
     product(id: ID!): Product
     users: [User!]!
   }
