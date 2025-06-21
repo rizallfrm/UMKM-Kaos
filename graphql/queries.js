@@ -1,0 +1,106 @@
+import { gql } from '@apollo/client';
+
+export const GET_PRODUCTS = gql`
+  query GetProducts {
+    products {
+      id
+      name
+      description
+      price
+      imageUrl
+      sizes
+      colors
+    }
+  }
+`;
+
+export const GET_PRODUCT = gql`
+  query GetProduct($id: ID!) {
+    product(id: $id) {
+      id
+      name
+      description
+      price
+      imageUrl
+      sizes
+      colors
+    }
+  }
+`;
+
+export const CREATE_PRODUCT = gql`
+  mutation CreateProduct(
+    $name: String!
+    $description: String!
+    $price: Float!
+    $imageUrl: String!
+    $sizes: [String!]!
+    $colors: [String!]!
+  ) {
+    createProduct(
+      name: $name
+      description: $description
+      price: $price
+      imageUrl: $imageUrl
+      sizes: $sizes
+      colors: $colors
+    ) {
+      id
+      name
+    }
+  }
+`;
+
+export const UPDATE_PRODUCT = gql`
+  mutation UpdateProduct(
+    $id: ID!
+    $name: String
+    $description: String
+    $price: Float
+    $imageUrl: String
+    $sizes: [String]
+    $colors: [String]
+  ) {
+    updateProduct(
+      id: $id
+      name: $name
+      description: $description
+      price: $price
+      imageUrl: $imageUrl
+      sizes: $sizes
+      colors: $colors
+    ) {
+      id
+      name
+    }
+  }
+`;
+
+export const DELETE_PRODUCT = gql`
+  mutation DeleteProduct($id: ID!) {
+    deleteProduct(id: $id)
+  }
+`;
+
+export const GET_USERS = gql`
+  query GetUsers {
+    users {
+      id
+      name
+      email
+      role
+    }
+  }
+`;
+
+export const GET_FEATURED_PRODUCTS = gql`
+  query GetFeaturedProducts($limit: Int!) {
+    products(limit: $limit, orderBy: "createdAt", orderDirection: "desc") {
+      id
+      name
+      description
+      price
+      imageUrl
+    }
+  }
+`;
