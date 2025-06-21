@@ -1,37 +1,71 @@
-import { collection, addDoc, getDocs, doc, updateDoc, deleteDoc } from 'firebase/firestore';
-import { db } from '../lib/firebase';
+import {
+  collection,
+  addDoc,
+  query,
+  orderBy,
+  limit,
+  getDocs,
+  doc,
+  updateDoc,
+  deleteDoc,
+} from "firebase/firestore";
+import { db } from "../lib/firebase";
 
 export const resolvers = {
   Query: {
-    products: async () => {
-      const querySnapshot = await getDocs(collection(db, 'products'));
-      return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    products: async (
+      _,
+      { limit: limitArg, orderBy: orderByArg, orderDirection },
+      { clientDb }
+    ) => {
+      try {
+        let q = query(collection(clientDb, "products"));
+
+        if (orderByArg) {
+          q = query(q, orderBy(orderByArg, orderDirection || "asc"));
+        }
+
+        if (limitArg) {
+          q = query(q, limit(limitArg));
+        }
+
+        const querySnapshot = await getDocs(q);
+        return querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+      } catch (error) {
+        console.error("Error fetching products:", error);
+        throw new Error("Failed to fetch products");
+      }
     },
     product: async (_, { id }) => {
-      const docRef = doc(db, 'products', id);
+      const docRef = doc(db, "products", id);
       const docSnap = await getDoc(docRef);
       return docSnap.exists() ? { id: docSnap.id, ...docSnap.data() } : null;
     },
     users: async () => {
-      const querySnapshot = await getDocs(collection(db, 'users'));
-      return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const querySnapshot = await getDocs(collection(db, "users"));
+      return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
     },
   },
   Mutation: {
-    createProduct: async (_, args) => {
-      const docRef = await addDoc(collection(db, 'products'), {
+    createProduct: async (_, args, { adminDb }) => {
+      const docRef = await adminDb.collection("products").add({
         ...args,
         createdAt: new Date().toISOString(),
       });
       return { id: docRef.id, ...args };
     },
+
     updateProduct: async (_, { id, ...args }) => {
-      const docRef = doc(db, 'products', id);
+      const docRef = doc(db, "products", id);
       await updateDoc(docRef, args);
       return { id, ...args };
     },
+
     deleteProduct: async (_, { id }) => {
-      await deleteDoc(doc(db, 'products', id));
+      await deleteDoc(doc(db, "products", id));
       return true;
     },
   },
