@@ -1,4 +1,4 @@
-import { gql } from '@apollo/client';
+import { gql } from "@apollo/client";
 
 export const GET_PRODUCTS = gql`
   query GetProducts {
@@ -94,8 +94,16 @@ export const GET_USERS = gql`
 `;
 
 export const GET_FEATURED_PRODUCTS = gql`
-  query GetFeaturedProducts($limit: Int!) {
-    products(limit: $limit, orderBy: "createdAt", orderDirection: "desc") {
+  query GetFeaturedProducts(
+    $limit: Int
+    $orderBy: String
+    $orderDirection: String
+  ) {
+    products(
+      limit: $limit
+      orderBy: $orderBy
+      orderDirection: $orderDirection
+    ) {
       id
       name
       description
