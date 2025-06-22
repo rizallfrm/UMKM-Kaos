@@ -1,24 +1,32 @@
-import { getFirestore } from 'firebase-admin/firestore';
-import { adminApp } from '../../lib/firebase-admin';
+// /pages/admin/products.js
+import { useState } from 'react';
 
-const db = getFirestore(adminApp);
+export default function AdminProductPage() {
+  const [name, setName] = useState('');
+  const [response, setResponse] = useState(null);
 
-export default async function handler(req, res) {
-  // Verifikasi admin
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
+  const submitProduct = async () => {
+    const res = await fetch('/api/products', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name }),
+    });
 
-  try {
-    const productData = {
-      ...req.body,
-      createdAt: new Date().toISOString()
-    };
+    const data = await res.json();
+    setResponse(data);
+  };
 
-    const docRef = await db.collection('products').add(productData);
-    res.status(200).json({ id: docRef.id });
-  } catch (error) {
-    console.error('Error adding product:', error);
-    res.status(500).json({ error: 'Gagal menambahkan produk' });
-  }
+  return (
+    <div>
+      <h1>Tambah Produk</h1>
+      <input
+        type="text"
+        value={name}
+        onChange={e => setName(e.target.value)}
+        placeholder="Nama Produk"
+      />
+      <button onClick={submitProduct}>Submit</button>
+      {response && <pre>{JSON.stringify(response, null, 2)}</pre>}
+    </div>
+  );
 }
