@@ -312,103 +312,106 @@ export default function AdminDashboard() {
                     key={product.id}
                     className="hover:bg-gray-50 transition-colors duration-150"
                   >
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    {/* Kolom Produk */}
+                    <td className="px-6 py-4">
                       <div className="flex items-center">
                         <div className="flex-shrink-0 h-12 w-12">
                           {product.imageUrl ? (
                             <img
-                              className="h-12 w-12 rounded-xl object-cover border border-gray-200"
+                              className="h-12 w-12 rounded-lg object-cover border border-gray-200"
                               src={product.imageUrl}
                               alt={product.name}
                               onError={(e) => {
                                 e.target.onerror = null;
-                                e.target.src =
-                                  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' fill='%23f3f4f6'/%3E%3Ctext x='24' y='26' font-size='16' text-anchor='middle' fill='%239ca3af'%3E" +
-                                  encodeURIComponent(
-                                    product.name.charAt(0).toUpperCase()
-                                  ) +
-                                  "%3C/text%3E%3C/svg%3E";
+                                e.target.src = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect width='48' height='48' fill='%23f3f4f6'/%3E%3Ctext x='24' y='26' font-size='16' text-anchor='middle' fill='%239ca3af'%3E${encodeURIComponent(
+                                  product.name.charAt(0).toUpperCase()
+                                )}%3C/text%3E%3C/svg%3E`;
                               }}
                             />
                           ) : (
-                            <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-rose-400 to-pink-500 flex items-center justify-center">
-                              <span className="text-white font-semibold text-sm">
+                            <div className="h-12 w-12 rounded-lg bg-gradient-to-br from-rose-400 to-pink-500 flex items-center justify-center">
+                              <span className="text-white font-medium text-sm">
                                 {product.name.charAt(0).toUpperCase()}
                               </span>
                             </div>
                           )}
                         </div>
                         <div className="ml-4">
-                          <div className="text-sm font-medium text-gray-900">
+                          <div className="text-sm font-medium text-gray-900 line-clamp-1">
                             {product.name}
                           </div>
-                          <div className="text-sm text-gray-500">
+                          <div className="text-xs text-gray-500">
                             Produk #{index + 1}
                           </div>
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+
+                    {/* Kolom Harga */}
+                    <td className="px-6 py-4">
                       <div className="text-sm font-semibold text-gray-900">
                         Rp {product.price.toLocaleString("id-ID")}
                       </div>
-                      <div className="text-sm text-gray-500">IDR</div>
+                      <div className="text-xs text-gray-500">IDR</div>
                     </td>
-                    <td className="px-10 py-4 whitespace-nowrap flex ">
-                      {/* Ukuran (Sizes) */}
-                      <div className="mb-2">
-                        <span className="text-xs font-medium text-gray-500">
-                          Ukuran:
-                        </span>
-                        <div className="flex flex-wrap gap-1 mt-1">
-                          {product.sizes?.length > 0 ? (
-                            product.sizes.map((size) => (
-                              <span
-                                key={size}
-                                className="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full"
-                              >
-                                {size}
-                              </span>
-                            ))
-                          ) : (
-                            <span className="text-xs text-gray-400">
-                              Belum ada ukuran
-                            </span>
-                          )}
-                        </div>
-                      </div>
 
-                      {/* Warna (Colors) */}
-                      <div className="ml-10">
-                        <span className="text-xs font-medium text-gray-500">
-                          Warna:
-                        </span>
-                        <div className="flex flex-wrap gap-1 mt-1">
-                          {product.colors?.length > 0 ? (
-                            product.colors.map((color) => (
-                              <div
-                                key={color}
-                                className="w-6 h-6 rounded-full border border-gray-200"
-                                style={{ backgroundColor: color }}
-                                title={color}
-                              />
-                            ))
-                          ) : (
-                            <span className="text-xs text-gray-400">
-                              Belum ada warna
-                            </span>
-                          )}
+                    {/* Kolom Variasi */}
+                    <td className="px-6 py-4">
+                      <div className="flex flex-col space-y-3">
+                        {/* Ukuran */}
+                        <div>
+                          <span className="text-xs font-medium text-gray-500 block mb-1">
+                            Ukuran:
+                          </span>
+                          <div className="flex flex-wrap gap-1">
+                            {product.sizes?.length > 0 ? (
+                              product.sizes.map((size) => (
+                                <span
+                                  key={size}
+                                  className="px-2 py-1 text-xs font-medium bg-blue-50 text-blue-700 rounded-md"
+                                >
+                                  {size}
+                                </span>
+                              ))
+                            ) : (
+                              <span className="text-xs text-gray-400">-</span>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Warna */}
+                        <div>
+                          <span className="text-xs font-medium text-gray-500 block mb-1">
+                            Warna:
+                          </span>
+                          <div className="flex flex-wrap gap-1">
+                            {product.colors?.length > 0 ? (
+                              product.colors.map((color) => (
+                                <span
+                                  key={color}
+                                  className="px-2 py-1 text-xs font-medium bg-gray-50 text-gray-700 rounded-md"
+                                >
+                                  {color}
+                                </span>
+                              ))
+                            ) : (
+                              <span className="text-xs text-gray-400">-</span>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <div className="flex items-center justify-end space-x-3">
+
+                    {/* Kolom Aksi */}
+                    <td className="px-6 py-4">
+                      <div className="flex justify-end space-x-3">
                         <Link
                           href={`/admin/products/edit/${product.id}`}
-                          className="group flex items-center space-x-2 text-blue-600 hover:text-blue-800 transition-colors duration-150"
+                          className="text-blue-600 hover:text-blue-800 transition-colors"
+                          title="Edit"
                         >
                           <svg
-                            className="w-4 h-4"
+                            className="w-5 h-5"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -416,18 +419,18 @@ export default function AdminDashboard() {
                             <path
                               strokeLinecap="round"
                               strokeLinejoin="round"
-                              strokeWidth="2"
+                              strokeWidth="1.5"
                               d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                            ></path>
+                            />
                           </svg>
-                          <span className="hidden sm:inline">Edit</span>
                         </Link>
                         <button
                           onClick={() => handleDelete(product.id)}
-                          className="group flex items-center space-x-2 text-red-600 hover:text-red-800 transition-colors duration-150"
+                          className="text-red-600 hover:text-red-800 transition-colors"
+                          title="Hapus"
                         >
                           <svg
-                            className="w-4 h-4"
+                            className="w-5 h-5"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -435,11 +438,10 @@ export default function AdminDashboard() {
                             <path
                               strokeLinecap="round"
                               strokeLinejoin="round"
-                              strokeWidth="2"
+                              strokeWidth="1.5"
                               d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                            ></path>
+                            />
                           </svg>
-                          <span className="hidden sm:inline">Hapus</span>
                         </button>
                       </div>
                     </td>
