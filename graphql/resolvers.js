@@ -5,6 +5,7 @@ import {
   orderBy,
   limit,
   getDocs,
+  getDoc,
   doc,
   updateDoc,
   deleteDoc,
@@ -46,7 +47,16 @@ export const resolvers = {
     },
     users: async () => {
       const querySnapshot = await getDocs(collection(db, "users"));
-      return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      return querySnapshot.docs.map((doc) => {
+        const data = doc.data();
+
+        return {
+          id: doc.id,
+          email: data.email || "",
+          name: data.name || "Unknown",
+          role: data.role || "user",
+        };
+      });
     },
   },
   Mutation: {
