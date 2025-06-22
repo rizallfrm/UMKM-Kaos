@@ -93,6 +93,23 @@ export const GET_USERS = gql`
   }
 `;
 
+export const UPDATE_USER = gql`
+  mutation UpdateUser($id: ID!, $name: String, $email: String, $role: String) {
+    updateUser(id: $id, name: $name, email: $email, role: $role) {
+      id
+      name
+      email
+      role
+    }
+  }
+`;
+
+export const DELETE_USER = gql`
+  mutation DeleteUser($id: ID!) {
+    deleteUser(id: $id)
+  }
+`;
+
 export const GET_FEATURED_PRODUCTS = gql`
   query GetFeaturedProducts(
     $limit: Int
