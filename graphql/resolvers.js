@@ -55,6 +55,7 @@ export const resolvers = {
           email: data.email || "",
           name: data.name || "Unknown",
           role: data.role || "user",
+          createdAt: data.createdAt || new Date().toISOString(),
         };
       });
     },
@@ -76,6 +77,15 @@ export const resolvers = {
 
     deleteProduct: async (_, { id }) => {
       await deleteDoc(doc(db, "products", id));
+      return true;
+    },
+    updateUser: async (_, { id, ...args }) => {
+      const userRef = doc(db, "users", id);
+      await updateDoc(userRef, args);
+      return { id, ...args };
+    },
+    deleteUser: async (_, { id }) => {
+      await deleteDoc(doc(db, "users", id));
       return true;
     },
   },
