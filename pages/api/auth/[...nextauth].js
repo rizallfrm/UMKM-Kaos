@@ -1,6 +1,5 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
-import FacebookProvider from "next-auth/providers/facebook";
 import { FirestoreAdapter } from "@next-auth/firebase-adapter";
 import { db } from "../../../lib/firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
@@ -12,10 +11,6 @@ export default NextAuth({
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    }),
-    FacebookProvider({
-      clientId: process.env.FACEBOOK_CLIENT_ID,
-      clientSecret: process.env.FACEBOOK_CLIENT_SECRET,
     }),
     {
       id: "firebase",
@@ -32,12 +27,12 @@ export default NextAuth({
             credentials.email,
             credentials.password
           );
-          
+
           return {
             id: userCredential.user.uid,
             email: userCredential.user.email,
             name: userCredential.user.displayName,
-            accessToken: await userCredential.user.getIdToken()
+            accessToken: await userCredential.user.getIdToken(),
           };
         } catch (error) {
           console.error("Login error:", error);
@@ -49,16 +44,14 @@ export default NextAuth({
   adapter: FirestoreAdapter(db),
   session: {
     strategy: "jwt",
-    maxAge: 30 * 24 * 60 * 60, // 30 days
+    maxAge: 30 * 24 * 60 * 60,
   },
   callbacks: {
     async jwt({ token, user, account }) {
-      // Persist user data and access token to JWT
       if (user) {
         token.id = user.id;
         token.accessToken = user.accessToken;
-        
-        // For Firebase email/password login
+
         if (account?.provider === "firebase") {
           try {
             const firebaseUser = await adminAuth.getUser(user.id);
@@ -67,16 +60,13 @@ export default NextAuth({
             console.error("Error getting user claims:", err);
             token.role = "user";
           }
-        }
-        // For OAuth providers
-        else {
+        } else {
           token.role = "user";
         }
       }
       return token;
     },
     async session({ session, token }) {
-      // Send properties to the client
       session.user.id = token.id;
       session.user.role = token.role;
       session.accessToken = token.accessToken;
@@ -84,5 +74,5 @@ export default NextAuth({
     },
   },
   secret: process.env.NEXTAUTH_SECRET,
-  debug: process.env.NODE_ENV === 'development',
+  debug: process.env.NODE_ENV === "development",
 });
