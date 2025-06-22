@@ -158,30 +158,33 @@ export default function ProductDetail({ id }) {
 
               {/* Colors */}
               {product.colors && product.colors.length > 0 && (
-                <div className="space-y-4">
-                  <h3 className="text-xl font-semibold text-gray-900 flex items-center">
-                    <svg className="w-5 h-5 text-rose-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM21 5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a4 4 0 004 4h4a2 2 0 002-2V5z" />
-                    </svg>
-                    Pilih Warna
-                  </h3>
-                  <div className="flex flex-wrap gap-4">
-                    {product.colors.map(color => (
-                      <button
-                        key={color}
-                        onClick={() => setSelectedColor(selectedColor === color ? '' : color)}
-                        className={`w-12 h-12 rounded-xl shadow-lg transition-all duration-300 border-4 hover:scale-110 ${
-                          selectedColor === color
-                            ? 'border-rose-500 shadow-xl transform scale-110'
-                            : 'border-white hover:border-rose-300'
-                        }`}
-                        style={{ backgroundColor: color }}
-                        title={color}
-                      />
-                    ))}
-                  </div>
-                </div>
-              )}
+  <div className="space-y-4">
+    <h3 className="text-xl font-semibold text-gray-900 flex items-center">
+      <svg className="w-5 h-5 text-rose-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM21 5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a4 4 0 004 4h4a2 2 0 002-2V5z" />
+      </svg>
+      Pilih Warna
+    </h3>
+    <div className="flex flex-wrap gap-3">
+      {product.colors.map(color => (
+        <button
+          key={color}
+          onClick={() => setSelectedColor(selectedColor === color ? '' : color)}
+          className={`
+            w-16 h-12 rounded-xl border-2 flex items-center justify-center font-semibold text-sm transition-all duration-200
+            ${selectedColor === color
+              ? 'bg-gradient-to-r from-pink-500 to-purple-600 text-white border-transparent shadow-lg'
+              : 'bg-white border-gray-200 text-gray-700 hover:border-pink-300 hover:bg-pink-50'
+            }
+            hover:scale-105
+          `}
+        >
+          {color}
+        </button>
+      ))}
+    </div>
+  </div>
+)}
 
               {/* CTA Section */}
               <div className="space-y-4 pt-4">
