@@ -224,7 +224,7 @@ export default function ProductsPage() {
             Tim customer service kami siap membantu Anda menemukan produk fashion yang tepat
           </p>
           <a
-            href="https://wa.me/6281234567890?text=Halo, saya ingin bertanya tentang produk fashion Anda"
+            href="https://wa.me/6282313088987?text=Halo, saya ingin bertanya tentang produk fashion Anda"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-3 bg-white text-pink-600 font-semibold px-8 py-4 rounded-2xl hover:bg-pink-50 transition-colors duration-200"
