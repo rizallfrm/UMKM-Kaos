@@ -1,16 +1,24 @@
+// pages/api/auth/[...nextauth].js
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
-import { FirestoreAdapter } from "@next-auth/firebase-adapter";
-import { db } from "../../../lib/firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../../../lib/firebase";
+import { auth, db } from "../../../lib/firebase";
 import { adminAuth } from "../../../lib/firebase-admin";
+import { doc, getDoc } from "firebase/firestore";
 
 export default NextAuth({
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      authorization: {
+        params: {
+          prompt: "consent",
+          access_type: "offline",
+          response_type: "code",
+          scope: "openid email profile",
+        },
+      },
     }),
     {
       id: "firebase",
@@ -28,10 +36,14 @@ export default NextAuth({
             credentials.password
           );
 
+          // Verifikasi custom claims langsung dari Firebase Admin
+          const user = await adminAuth.getUser(userCredential.user.uid);
+          
           return {
             id: userCredential.user.uid,
             email: userCredential.user.email,
             name: userCredential.user.displayName,
+            role: user.customClaims?.role || "user",
             accessToken: await userCredential.user.getIdToken(),
           };
         } catch (error) {
@@ -41,29 +53,29 @@ export default NextAuth({
       },
     },
   ],
-  adapter: FirestoreAdapter(db),
   session: {
     strategy: "jwt",
     maxAge: 30 * 24 * 60 * 60,
   },
   callbacks: {
-    async jwt({ token, user, account }) {
+    async jwt({ token, user }) {
+      // Jika user login pertama kali
       if (user) {
         token.id = user.id;
+        token.role = user.role;
         token.accessToken = user.accessToken;
-
-        if (account?.provider === "firebase") {
-          try {
-            const firebaseUser = await adminAuth.getUser(user.id);
-            token.role = firebaseUser.customClaims?.role || "user";
-          } catch (err) {
-            console.error("Error getting user claims:", err);
-            token.role = "user";
-          }
-        } else {
-          token.role = "user";
+      }
+      
+      // Untuk request berikutnya, verifikasi role terbaru
+      if (token.id && !token.forceRefresh) {
+        try {
+          const userRecord = await adminAuth.getUser(token.id);
+          token.role = userRecord.customClaims?.role || "user";
+        } catch (error) {
+          console.error("Error refreshing user role:", error);
         }
       }
+      
       return token;
     },
     async session({ session, token }) {
