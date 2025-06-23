@@ -39,3 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+#credentials folder
+/lib/credentials/firebase-admin.json
+/lib/credentials/
