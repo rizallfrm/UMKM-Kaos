@@ -8,10 +8,10 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { useMutation } from "@apollo/client";
 import { CREATE_PRODUCT } from "../graphql/queries";
+import { ChevronLeft, LayoutDashboard, Menu, Package, X } from "lucide-react";
 
 export default function HomePage() {
   const { data: session, status } = useSession();
-  console.log("Role dari session:", session?.user?.role);
 
   const { loading, error, data } = useQuery(GET_FEATURED_PRODUCTS, {
     variables: {
@@ -23,7 +23,7 @@ export default function HomePage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const router = useRouter();
   const [createProduct] = useMutation(CREATE_PRODUCT);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -68,73 +68,81 @@ export default function HomePage() {
       {/* Admin Sidebar */}
       {session?.user?.role === "admin" && (
         <>
-          {/* Sidebar Overlay */}
+          {/* Toggle Button - Selalu terlihat */}
+          <button
+            onClick={toggleSidebar}
+            className={`fixed z-50 p-2 rounded-md bg-white shadow-md transition-all duration-300 hover:bg-gray-100
+        ${isSidebarOpen ? "left-64" : "left-4"} 
+        top-4 lg:top-6 lg:left-6`}
+          >
+            {isSidebarOpen ? (
+              <X className="w-5 h-5 text-gray-600" />
+            ) : (
+              <Menu className="w-5 h-5 text-gray-600" />
+            )}
+          </button>
+
+          {/* Overlay hanya untuk mobile */}
           {isSidebarOpen && isMobile && (
             <div
-              className="fixed inset-0 bg-red-500 lg:hidden"
+              className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
               onClick={toggleSidebar}
-            ></div>
+            />
           )}
 
           {/* Sidebar */}
-          <div
-            className={`fixed top-0 left-0 h-full w-64 bg-white shadow-lg z-50 transition-all duration-300 ease-in-out 
-            ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"} 
-            lg:translate-x-0`}
+          <aside
+            className={`fixed top-0 left-0 h-screen bg-white shadow-xl z-40 transition-all duration-300 ease-in-out
+        ${isSidebarOpen ? "w-64" : "w-0 lg:w-20"} 
+        overflow-hidden`}
           >
-            {/* Sidebar Header */}
-            <div className="p-4 border-b border-gray-200 flex justify-between items-center">
-              <h2 className="text-xl font-bold text-gray-800">
-                Admin Dashboard
-              </h2>
-              <button
-                onClick={toggleSidebar}
-                className="lg:hidden text-gray-500 hover:text-gray-700"
-              >
-                <svg
-                  className="w-6 h-6"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              </button>
-            </div>
-
-            {/* Sidebar Content */}
-            <nav className="p-4">
-              <ul className="space-y-2">
-                <li>
-                  <Link
-                    href="/admin/dashboard"
-                    className="flex items-center px-4 py-2 rounded-lg bg-purple-100 text-purple-700 font-medium"
-                    onClick={() => isMobile && toggleSidebar()}
+            <div className="h-full flex flex-col">
+              {/* Sidebar Header */}
+              <div className="p-4 border-b border-gray-200 flex items-center justify-between h-16">
+                {isSidebarOpen ? (
+                  <h2 className="text-lg font-semibold text-gray-800 whitespace-nowrap">
+                    Admin Dashboard
+                  </h2>
+                ) : (
+                  <h2 className="text-lg font-semibold text-gray-800">AD</h2>
+                )}
+                {isSidebarOpen && (
+                  <button
+                    onClick={toggleSidebar}
+                    className="p-1 rounded-full hover:bg-gray-100"
                   >
-                    <svg
-                      className="w-5 h-5 mr-3"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
+                    <ChevronLeft className="w-5 h-5 text-gray-500" />
+                  </button>
+                )}
+              </div>
+
+              {/* Sidebar Content */}
+              <nav className="flex-1 overflow-y-auto p-4">
+                <ul className="space-y-1">
+                  <li>
+                    <Link
+                      href="/admin/dashboard"
+                      className={`flex items-center p-3 rounded-lg transition-colors duration-200
+                  ${
+                    router.pathname === "/admin/dashboard"
+                      ? "bg-purple-50 text-purple-700"
+                      : "text-gray-700 hover:bg-gray-100"
+                  }
+                  ${!isSidebarOpen && "justify-center"}`}
+                      onClick={() => isMobile && toggleSidebar()}
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-                      />
-                    </svg>
-                    Dashboard Overview
-                  </Link>
-                </li>
-              </ul>
-            </nav>
-          </div>
+                      <LayoutDashboard className="w-5 h-5 flex-shrink-0" />
+                      {isSidebarOpen && (
+                        <span className="ml-3 whitespace-nowrap">
+                          Dashboard Overview
+                        </span>
+                      )}
+                    </Link>
+                  </li>
+                </ul>
+              </nav>
+            </div>
+          </aside>
         </>
       )}
 
