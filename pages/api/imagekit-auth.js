@@ -1,4 +1,3 @@
-// pages/api/imagekit-auth.js
 import imagekit from "@/lib/imagekit";
 
 export default function handler(req, res) {
