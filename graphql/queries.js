@@ -24,10 +24,18 @@ export const GET_PRODUCT = gql`
       imageUrl
       sizes
       colors
+      averageRating
+      reviewCount
+      reviews {
+        id
+        userName
+        rating
+        comment
+        createdAt
+      }
     }
   }
 `;
-
 export const CREATE_PRODUCT = gql`
   mutation CreateProduct(
     $name: String!
@@ -126,6 +134,37 @@ export const GET_FEATURED_PRODUCTS = gql`
       description
       price
       imageUrl
+    }
+  }
+`;
+
+export const GET_PRODUCT_REVIEWS = gql`
+  query GetProductReviews($productId: ID!) {
+    getProductReviews(productId: $productId) {
+      id
+      userId
+      userName
+      rating
+      comment
+      createdAt
+      userAvatar
+    }
+  }
+`;
+
+export const ADD_PRODUCT_REVIEW = gql`
+  mutation AddProductReview($productId: ID!, $rating: Int!, $comment: String!) {
+    addProductReview(
+      productId: $productId
+      rating: $rating
+      comment: $comment
+    ) {
+      id
+      userId
+      userName
+      rating
+      comment
+      createdAt
     }
   }
 `;
