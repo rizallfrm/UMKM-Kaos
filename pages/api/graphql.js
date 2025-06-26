@@ -9,7 +9,8 @@ const apolloServer = new ApolloServer({
   resolvers,
   context: () => ({
     clientDb: db, // For client-side operations
-    adminDb: adminDb, // For admin operations
+    adminDb: adminDb,
+    // user: session?.user || null, // For admin operations
   }),
 });
 
