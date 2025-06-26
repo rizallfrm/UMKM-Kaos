@@ -1,6 +1,17 @@
 import { gql } from "apollo-server-micro";
 
 export const typeDefs = gql`
+  type Review {
+    id: ID!
+    productId: ID!
+    userId: ID!
+    userName: String!
+    rating: Int! 
+    comment: String!
+    createdAt: String!
+    userAvatar: String
+  }
+
   type Product {
     id: ID!
     name: String!
@@ -11,6 +22,9 @@ export const typeDefs = gql`
     colors: [String!]!
     createdAt: String!
     updatedAt: String!
+    averageRating: Float
+    reviewCount: Int
+    reviews: [Review!]!
   }
 
   type User {
@@ -30,7 +44,6 @@ export const typeDefs = gql`
   }
 
   type Query {
-    # Product Queries
     products(
       limit: Int
       orderBy: String
@@ -39,19 +52,15 @@ export const typeDefs = gql`
     ): [Product!]!
     product(id: ID!): Product
     featuredProducts(limit: Int = 4): [Product!]!
-
-    # User Queries
     users: [User!]!
     user(id: ID!): User
     me: User
-
-    # Analytics
+    getProductReviews(productId: ID!): [Review!]!
     productCount: Int!
     userCount: Int!
   }
 
   type Mutation {
-    # Product Mutations
     createProduct(
       name: String!
       description: String!
@@ -70,8 +79,6 @@ export const typeDefs = gql`
       colors: [String]
     ): Product!
     deleteProduct(id: ID!): Boolean
-
-    # User Mutations
     createUser(
       email: String!
       name: String!
@@ -87,8 +94,7 @@ export const typeDefs = gql`
     ): User!
     deleteUser(id: ID!): Boolean
     changePassword(currentPassword: String!, newPassword: String!): Boolean
-
-    # Auth Mutations
+    addProductReview(productId: ID!, rating: Int!, comment: String!): Review!
     login(email: String!, password: String!): AuthPayload!
     register(email: String!, name: String!, password: String!): AuthPayload!
     forgotPassword(email: String!): Boolean
@@ -96,7 +102,6 @@ export const typeDefs = gql`
   }
 
   type Subscription {
-    # Real-time updates
     productCreated: Product!
     productUpdated: Product!
     productDeleted: ID!
@@ -105,3 +110,5 @@ export const typeDefs = gql`
     userDeleted: ID!
   }
 `;
+
+
