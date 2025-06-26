@@ -1,10 +1,22 @@
-import { useQuery } from "@apollo/client";
+import { useQuery, useMutation } from "@apollo/client";
 import { GET_PRODUCT } from "../../graphql/queries";
 import { useState } from "react";
 import { useSession, signIn } from "next-auth/react";
 import { useRouter } from "next/router";
+import { ADD_PRODUCT_REVIEW, GET_PRODUCT_REVIEWS } from "../../graphql/queries";
+import ReviewForm from "@/components/ReviewForm";
+import ProductReviews from "@/components/ProductReview";
 
 export default function ProductDetail({ id }) {
+  // Query untuk mendapatkan review
+  const { data: reviewsData } = useQuery(GET_PRODUCT_REVIEWS, {
+    variables: { productId: id },
+  });
+  const [addReview] = useMutation(ADD_PRODUCT_REVIEW);
+  const { dataRev, loadingRev } = useQuery(GET_PRODUCT_REVIEWS, {
+    variables: { productId: id },
+  });
+
   const { loading, error, data } = useQuery(GET_PRODUCT, {
     variables: { id },
   });
@@ -145,7 +157,6 @@ export default function ProductDetail({ id }) {
                   className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                 />
               </div>
-
               {/* Badge untuk UMKM */}
               <div className="flex justify-center">
                 <div className="bg-gradient-to-r from-rose-500 to-purple-600 text-white px-6 py-2 rounded-full text-sm font-medium shadow-lg">
@@ -164,7 +175,8 @@ export default function ProductDetail({ id }) {
                   </svg>
                   Produk UMKM Lokal
                 </div>
-              </div>
+              </div>{" "}
+              <ProductReviews productId={product.id} />
             </div>
 
             {/* Product Info Section */}
@@ -288,6 +300,9 @@ export default function ProductDetail({ id }) {
                   </div>
                 </div>
               )}
+              <div className="mt-12">
+                <ReviewForm productId={product.id} />
+              </div>
 
               {/* CTA Section */}
               <div className="space-y-4 pt-4">
